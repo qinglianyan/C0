@@ -1,5 +1,6 @@
 package miniplc0java;
 
+import java.io.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,6 +39,7 @@ public class App {
 
         var inputFileName = result.getString("input");
         var outputFileName = result.getString("output");
+        var debugFileName = "debug.txt";
 
         InputStream input;
         if (inputFileName.equals("-")) {
@@ -66,52 +68,82 @@ public class App {
                 return;
             }
         }
+        
+        PrintStream debugOut;
+        debugOut=System.out;
+        
 
         Scanner scanner;
         scanner = new Scanner(input);
-        var iter = new StringIter(scanner);
-        var tokenizer = tokenize(iter);
-
-        if (result.getBoolean("tokenize")) {
-            // tokenize
-            var tokens = new ArrayList<Token>();
-            try {
-                while (true) {
-                    var token = tokenizer.nextToken();
-                    if (token.getTokenType().equals(TokenType.EOF)) {
-                        break;
-                    }
-                    tokens.add(token);
-                }
-            } catch (Exception e) {
-                // 遇到错误不输出，直接退出
-                System.err.println(e);
-                System.exit(0);
-                return;
-            }
-            for (Token token : tokens) {
-                output.println(token.toString());
-            }
-        } else if (result.getBoolean("analyse")) {
-            // analyze
-            var analyzer = new Analyser(tokenizer);
-            List<Instruction> instructions;
-            try {
-                instructions = analyzer.analyse();
-            } catch (Exception e) {
-                // 遇到错误不输出，直接退出
-                System.err.println(e);
-                System.exit(0);
-                return;
-            }
-            for (Instruction instruction : instructions) {
-                output.println(instruction.toString());
-            }
-        } else {
-            System.err.println("Please specify either '--analyse' or '--tokenize'.");
-            System.exit(3);
-        }
+//        /* 测试输出的时候设置参数“-o - -” */
+//        System.out.println("next方式接受：");
+//        if(scanner.hasNext()) {
+//        	String str=scanner.next();
+//        	System.out.println("输出数据："+str);
+//        }
+        
+//        var iter = new StringIter(scanner);
+//        var tokenizer = tokenize(iter);
+//        var symbolIter=new SymbolIter(tokenizer);
+//        var analyse=new Analyser(tokenizer);
+//
+//        try {
+//            OoFile ooFile = analyse.analyse();
+//            ooFile.writeDebug(debugOutput);
+//            List<Byte> byteList = new ArrayList<>();
+//            ooFile.toAssemble(byteList);
+//            for(byte by: byteList) {
+//                System.out.printf("0x%x ", (int)by);
+//                output.writeByte((int)by);
+//            }
+//        } catch (Exception e) {
+//            // 遇到错误不输出，直接退出
+//            e.printStackTrace();
+//            System.exit(-1);
+//        }
     }
+    
+    
+//        if (result.getBoolean("tokenize")) {
+//            // tokenize
+//            var tokens = new ArrayList<Token>();
+//            try {
+//                while (true) {
+//                    var token = tokenizer.nextToken();
+//                    if (token.getTokenType().equals(TokenType.EOF)) {
+//                        break;
+//                    }
+//                    tokens.add(token);
+//                }
+//            } catch (Exception e) {
+//                // 遇到错误不输出，直接退出
+//                System.err.println(e);
+//                System.exit(0);
+//                return;
+//            }
+//            for (Token token : tokens) {
+//                output.println(token.toString());
+//            }
+//        } else if (result.getBoolean("analyse")) {
+//            // analyze
+//            var analyzer = new Analyser(tokenizer);
+//            List<Instruction> instructions;
+//            try {
+//                instructions = analyzer.analyse();
+//            } catch (Exception e) {
+//                // 遇到错误不输出，直接退出
+//                System.err.println(e);
+//                System.exit(0);
+//                return;
+//            }
+//            for (Instruction instruction : instructions) {
+//                output.println(instruction.toString());
+//            }
+//        } else {
+//            System.err.println("Please specify either '--analyse' or '--tokenize'.");
+//            System.exit(3);
+//        }
+//    }
 
     private static ArgumentParser buildArgparse() {
         var builder = ArgumentParsers.newFor("miniplc0-java");
