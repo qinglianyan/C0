@@ -1,4 +1,4 @@
-package symbolTable;
+package miniplc0java.symbolTable;
 
 public enum DataType {
 	/* 数据类型 */

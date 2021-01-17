@@ -1,4 +1,4 @@
-package symbolTable;
+package miniplc0java.symbolTable;
 
 import java.util.ArrayList;
 
