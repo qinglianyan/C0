@@ -51,27 +51,24 @@ public class Analyser2 {
 	private boolean windup() throws AnalyzeError {
 		// TODO Auto-generated method stub
 		assert this.symbolTable.getLevel() == 0;
-        Symbol symbol = symbolTable.findAllBlockSymbol("main");
-        if(symbol==null || symbol.getSymboltype()!=SymbolType.FUNCTION) {
-            throw new AnalyzeError(ErrorCode.NoMain, new Pos(0,0));
-        }
-        assert symbol instanceof FuncSymbol;
-        FuncSymbol funcSymbol = (FuncSymbol) symbol;
+		Symbol symbol = symbolTable.findAllBlockSymbol("main");
+		if (symbol == null || symbol.getSymboltype() != SymbolType.FUNCTION) {
+			throw new AnalyzeError(ErrorCode.NoMain, new Pos(0, 0));
+		}
+		assert symbol instanceof FuncSymbol;
+		FuncSymbol funcSymbol = (FuncSymbol) symbol;
 
-        //为_start函数添加调用main的指令
-        this.outfile.addStartInstruction(new InstructionU32(InstructionType.StackAlloc, (int)1));
-        this.outfile.addStartInstruction(new InstructionU32(InstructionType.Call, (int)funcSymbol.getOffset()));
-        this.outfile.addStartInstruction(new InstructionU32(InstructionType.PopN, (int)1));
+		// 为_start函数添加调用main的指令
+		this.outfile.addStartInstruction(new InstructionU32(InstructionType.StackAlloc, (int) 1));
+		this.outfile.addStartInstruction(new InstructionU32(InstructionType.Call, (int) funcSymbol.getOffset()));
+		this.outfile.addStartInstruction(new InstructionU32(InstructionType.PopN, (int) 1));
 
-        return true;
+		return true;
 	}
 
 	/*
 	 * 程序结构 program -> decl_stmt* function* 程序->声明语句 或 函数
 	 * 
-	 * @throws CompileError
-	 */
-	/**
 	 * @throws CompileError
 	 */
 	private void analyseProgram() throws CompileError {
@@ -143,7 +140,6 @@ public class Analyser2 {
 		it.expect(TokenType.SEMICOLON);
 
 		// 在符号表中注册一个新的变量符号
-
 		varSymbol.setInitialized(isInit);
 		// 如果是全局变量
 		this.symbolTable.insertSymbol(varSymbol);
@@ -178,7 +174,7 @@ public class Analyser2 {
 		VarSymbol varSymbol = new VarSymbol(variable.getValueString(), SymbolType.CONST, dType, 0,
 				variable.getStartPos());
 
-		// 写入oofile中
+		// 写入outfile
 		int offset = 0;
 		if (this.symbolTable.getLevel() == 0) {
 			varSymbol.setGlobal(true);
@@ -201,18 +197,17 @@ public class Analyser2 {
 		it.expect(TokenType.SEMICOLON);
 
 		// 获取对应的符号数据类型
-
 		varSymbol.setInitialized(true);
 		TypeChecker.typeCheck(this.typeMap.get(ty.getTokenType()), exprDType, variable.getStartPos());
 		this.symbolTable.insertSymbol(varSymbol);
 
-		// 解析常量声明分析完毕
 		return;
 
 	}
 
 	/*
-	 * 分析函数声明 'fn' IDENT '(' function_param_list? ')' '->' ty block_stmt
+	 * 分析函数声明
+	 * function -> 'fn' IDENT '(' function_param_list? ')' '->' ty block_stmt
 	 * 
 	 * @throws CompileError
 	 */
@@ -227,7 +222,7 @@ public class Analyser2 {
 
 		it.expect(TokenType.L_PAREN);
 
-		// paramlist 是可选的
+		// function_param_list的可以说是FIRST集是const或者是ident
 		if (it.peek().getTokenType() == TokenType.IDENT || it.peek().getTokenType() == TokenType.CONST_KW) {
 			analyseFuncParamList(funcSymbol);
 		}
@@ -260,8 +255,9 @@ public class Analyser2 {
 		}
 	}
 
-	/**
-	 * 分析函数参数列表：function_param_list -> function_param (',' function_param)*
+	/*
+	 * 分析函数参数列表
+	 * function_param_list -> function_param (',' function_param)*
 	 * 
 	 * @throws CompileError
 	 */
@@ -274,8 +270,9 @@ public class Analyser2 {
 		}
 	}
 
-	/**
-	 * 分析函数参数：function_param -> 'const'? IDENT ':' ty
+	/*
+	 * 分析函数参数
+	 * function_param -> 'const'? IDENT ':' ty
 	 * 
 	 * @return Symbol 返回解析的函数参数符号
 	 * @throws CompileError
@@ -309,11 +306,16 @@ public class Analyser2 {
 	}
 
 	/**
-	 * 解析各种语句，主要是分发的功能 stmt -> expr_stmt | decl_stmt | if_stmt | while_stmt |
-	 * return_stmt | block_stmt | empty_stmt first集为： first(expr_stmt) = {'-',IDNET,
-	 * UINT_VALUE, DOUBLE_VALUE, STRING_VALUE, '('} first(decal_stmt) =
-	 * {LET_KW,CONST_KW} first(if_stmt) = {IF_KW} first(while_stmt) = {WHILE_KW}
-	 * first(return_stmt) = {RETURN_KW} first(block_stmt) = {L_BRACE}
+	 * 解析各种语句，主要是分发的功能
+	 * stmt -> expr_stmt | decl_stmt | if_stmt | while_stmt |
+	 * return_stmt | block_stmt | empty_stmt 
+	 * first集为
+	 * first(expr_stmt) = {'-',IDNET,UINT_VALUE, DOUBLE_VALUE, STRING_VALUE, '('}
+	 * first(decal_stmt) = {LET_KW,CONST_KW}
+	 * first(if_stmt) = {IF_KW}
+	 * first(while_stmt) = {WHILE_KW}
+	 * first(return_stmt) = {RETURN_KW}
+	 * first(block_stmt) = {L_BRACE}
 	 * first(empty_stmt) = {SEMICOLON}
 	 * 
 	 * @throws CompileError
@@ -346,8 +348,9 @@ public class Analyser2 {
 
 	}
 
-	/**
-	 * 分析语句块：block_stmt -> '{' stmt* '}'
+	/*
+	 * 分析代码块
+	 * block_stmt -> '{' stmt* '}'
 	 * 
 	 * @param funcSymbol 函数的符号，用来获取函数的参数
 	 * @throws CompileError
@@ -384,8 +387,9 @@ public class Analyser2 {
 		this.symbolTable.removeBlockTable();
 	}
 
-	/**
-	 * 空语句：empty_stmt -> ';'
+	/*
+	 * 空语句
+	 * empty_stmt -> ';'
 	 * 
 	 * @throws CompileError
 	 */
@@ -394,8 +398,9 @@ public class Analyser2 {
 		return;
 	}
 
-	/**
-	 * 分析while语句：while_stmt -> 'while' expr block_stmt
+	/*
+	 * 分析while语句
+	 * while_stmt -> 'while' expr block_stmt
 	 * 
 	 * @throws CompileError
 	 */
@@ -414,8 +419,9 @@ public class Analyser2 {
 		this.branchStack.quitBranch(whileToken.getStartPos());
 	}
 
-	/**
-	 * 分析If语句: if_stmt -> 'if' expr block_stmt ('else' (block_stmt | if_stmt))?
+	/*
+	 * 分析If语句:
+	 * if_stmt -> 'if' expr block_stmt ('else' (block_stmt | if_stmt))?
 	 * 
 	 * @throws CompileError
 	 */
@@ -465,9 +471,9 @@ public class Analyser2 {
 		return;
 	}
 
-	/**
-	 * 分析return语句: return_stmt -> 'return' expr? ';' 写法可以优化,
-	 * 可以直接判断下一个是不是';'，如果不是直接丢给expr，用expr来抛出异常
+	/*
+	 * 分析return语句
+	 * return_stmt -> 'return' expr? ';'
 	 * 
 	 * @throws CompileError
 	 */
@@ -491,7 +497,7 @@ public class Analyser2 {
 		this.outfile.addInstruction(new InstructionNone(InstructionType.Ret));
 	}
 
-	/**
+	/*
 	 * 分析: empty_stmt -> ';'
 	 * 
 	 * @throws CompileError
@@ -505,11 +511,16 @@ public class Analyser2 {
 		it.expect(TokenType.SEMICOLON);
 	}
 
-	/**
-	 * 分析expr,将文法改写如下 Expr -> Cond ( (== | != | < | > | <= | >=) Cond )? Cond ->
-	 * Term {(+ | -) Term} Term -> Factor { (* | /) Factor} Factor -> Atom { as (
-	 * INT | DOUBLE )}? Atom -> '-'? Item Item -> '(' Expr ')' |IDENT | UINT_VALUE |
-	 * DOUBLE_VALUE | func_call | IDENT '=' E 每一个表达式都会返回其类型用来做判断
+	/*
+	 * 分析expr,将文法改写如下
+	 * 这里相当于是改成了算符优先文法，先出现的优先级低
+	 * Expr -> Cond ( (== | != | < | > | <= | >=) Cond )?
+	 * Cond ->Term {(+ | -) Term}
+	 * Term -> Factor { (* | /) Factor}
+	 * Factor -> Atom { as (INT | DOUBLE )}?
+	 * Atom -> '-'? Item
+	 * Item -> '(' Expr ')' |IDENT | UINT_VALUE |DOUBLE_VALUE | func_call | IDENT '=' Expr
+	 * 每一个表达式都会返回其类型用来做判断
 	 * 
 	 * @return 返回一个SymbolType用来做类型判断
 	 * @throws CompileError
@@ -569,8 +580,9 @@ public class Analyser2 {
 		return leftType;
 	}
 
-	/**
-	 * 分析Cond表达式：Cond -> Term {(+ | -) Term}
+	/*
+	 * 分析Cond表达式
+	 * Cond -> Term {(+ | -) Term}
 	 * 
 	 * @throws CompileError
 	 */
@@ -600,8 +612,9 @@ public class Analyser2 {
 		return leftType;
 	}
 
-	/**
-	 * 分析Term表达式 ：Term -> Factor { (* | /) Factor}
+	/*
+	 * 分析Term表达式
+	 * Term -> Factor { (* | /) Factor}
 	 * 
 	 * @throws CompileError
 	 */
@@ -631,8 +644,9 @@ public class Analyser2 {
 		return leftType;
 	}
 
-	/**
-	 * 分析Factor表达式： Factor -> Atom { as ( INT | DOUBLE )}
+	/*
+	 * 分析Factor表达式
+	 * Factor -> Atom { as ( INT | DOUBLE )}
 	 * 
 	 * @throws CompileError
 	 */
@@ -663,8 +677,9 @@ public class Analyser2 {
 		return dType;
 	}
 
-	/**
-	 * 分析Atom语句：Atom -> '-'? Item
+	/*
+	 * 分析Atom语句
+	 * Atom -> '-'? Item
 	 * 
 	 * @throws CompileError
 	 */
@@ -690,9 +705,10 @@ public class Analyser2 {
 		return dType;
 	}
 
-	/**
-	 * 分析Item语句：'(' Expr ')' |IDENT | UINT_VALUE | DOUBLE_VALUE | func_call | IDENT
-	 * '=' Expr 其中func_call 的first集也是IDent
+	/*
+	 * 分析Item语句：
+	 * Item -> '(' Expr ')' |IDENT | UINT_VALUE | DOUBLE_VALUE | func_call | IDENT'=' Expr
+	 * 其中func_call 的first集也是IDent
 	 * 
 	 * @throws CompileError
 	 */
@@ -709,10 +725,11 @@ public class Analyser2 {
 		else if (it.check(TokenType.UINT_LITERAL)) {
 			Token uint = it.expect(TokenType.UINT_LITERAL);
 			dType = DataType.INT;
-			//123456
+			// 123456
 			// 生成指令
-			long tmp=((Integer) uint.getValue()).longValue();
-			this.outfile.addInstruction(new InstructionU64(InstructionType.Push, ((Integer) uint.getValue()).longValue()));
+			long tmp = ((Integer) uint.getValue()).longValue();
+			this.outfile
+					.addInstruction(new InstructionU64(InstructionType.Push, ((Integer) uint.getValue()).longValue()));
 		}
 		// 对应DOUBLE_VALUE，浮点型字面量
 		else if (it.check(TokenType.DOUBLE_LITERAL)) {
@@ -733,16 +750,22 @@ public class Analyser2 {
 		else if (it.check(TokenType.IDENT)) {
 			dType = analyseCallOrAssignOrIdent();
 		} else {
+			/* 这里 */
+			System.err.println(it.peek().getTokenType().toString());
 			throw new AnalyzeError(ErrorCode.UnExpectToken, it.peek().getStartPos());
 		}
 
 		return dType;
 	}
 
-	/**
-	 * 分析赋值语句，Ident表达式以及函数调用表达式 call_expr -> IDENT '(' call_param_list? ')'
-	 * 类型为函数的返回类型 ident_expr -> IDENT 类型为IDENT的类型 assign_expr -> l_expr '=' expr；
-	 * l_expr -> IDENT 类型为void 因为其
+	/*
+	 * 分析赋值语句，Ident表达式以及函数调用表达式 
+	 * call_expr -> IDENT '(' call_param_list? ')'
+	 * 类型为函数的返回类型
+	 * ident_expr -> IDENT
+	 * 类型为IDENT的类型
+	 * assign_expr -> l_expr '=' expr；
+	 * l_expr -> IDENT
 	 * 
 	 * @throws CompileError
 	 */
@@ -753,7 +776,8 @@ public class Analyser2 {
 		boolean isLib = false;
 		Symbol symbol = this.symbolTable.findAllBlockSymbol(identToken.getValueString());
 		if (symbol == null) {
-			if ((symbol = Lib.genLibFunc(identToken.getValueString(), identToken.getStartPos(), this.outfile)) == null) {
+			if ((symbol = Lib.genLibFunc(identToken.getValueString(), identToken.getStartPos(),
+					this.outfile)) == null) {
 				throw new AnalyzeError(ErrorCode.NotDeclared, identToken.getStartPos());
 			} else {
 				// 函数调用是一个lib函数
@@ -847,8 +871,10 @@ public class Analyser2 {
 		}
 	}
 
-	/**
-	 * 分析函数的参数：call_param_list -> expr (',' expr)* 然后检查函数调用的参数是否相同。
+	/*
+	 * 分析函数的参数
+	 * call_param_list -> expr (',' expr)*
+	 * 然后检查函数调用的参数是否相同。
 	 * 
 	 * @param funcSymbol 函数的符号，用来获取参数信息
 	 * @param funcToken  函数的Token， 用来获取位置报错
