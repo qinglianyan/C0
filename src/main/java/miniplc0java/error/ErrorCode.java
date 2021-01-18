@@ -6,5 +6,5 @@ public enum ErrorCode {
     NoBegin, NoEnd, NeedIdentifier, ConstantNeedValue, NoSemicolon, InvalidVariableDeclaration, IncompleteExpression,
     NotDeclared, AssignToConstant, DuplicateDeclaration, NotInitialized, InvalidAssignment, InvalidPrint, ExpectedToken,
     /*add*/
-    InvalidString
+    InvalidString, DuplicateArgs, InvalidType, InvalidVoid
 }

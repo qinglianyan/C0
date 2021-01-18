@@ -20,7 +20,7 @@ public class SymbolIter {
 	 * @return
 	 * @throws TokenizeError
 	 */
-	private Token peek() throws TokenizeError {
+	public Token peek() throws TokenizeError {
 		if (peekedToken == null) {
 			peekedToken = tokenizer.nextToken();
 		}
@@ -33,7 +33,7 @@ public class SymbolIter {
 	 * @return
 	 * @throws TokenizeError
 	 */
-	private Token next() throws TokenizeError {
+	public Token next() throws TokenizeError {
 		if (peekedToken != null) {
 			var token = peekedToken;
 			peekedToken = null;
@@ -50,7 +50,7 @@ public class SymbolIter {
 	 * @return
 	 * @throws TokenizeError
 	 */
-	private boolean check(TokenType tt) throws TokenizeError {
+	public boolean check(TokenType tt) throws TokenizeError {
 		var token = peek();
 		return token.getTokenType() == tt;
 	}
@@ -62,7 +62,7 @@ public class SymbolIter {
 	 * @return 如果匹配则返回这个 token，否则返回 null
 	 * @throws TokenizeError
 	 */
-	private Token nextIf(TokenType tt) throws TokenizeError {
+	public Token nextIf(TokenType tt) throws TokenizeError {
 		var token = peek();
 		if (token.getTokenType() == tt) {
 			return next();
@@ -78,7 +78,7 @@ public class SymbolIter {
 	 * @return 这个 token
 	 * @throws CompileError 如果类型不匹配
 	 */
-	private Token expect(TokenType tt) throws CompileError {
+	public Token expect(TokenType tt) throws CompileError {
 		var token = peek();
 		if (token.getTokenType() == tt) {
 			return next();
