@@ -39,9 +39,9 @@ public class Tokenizer {
         else if(peek=='\"') {
         	return lexString();
         }
-//        else if() {
-//        	return lexChar();
-//        }
+        else if(peek=='\"') {
+        	return lexChar();
+        }
         else if(peek=='/') {
         	return lexComment();
         }
@@ -50,7 +50,52 @@ public class Tokenizer {
         }
     }
 
-    /*注释
+    /*
+     * 字符
+     * 字符字面量是由单引号包裹的单个字符或者是转义序列
+     * 单个字符可以是出了单引号线、空白符以外的任何字符
+     * 转义序列可以是\'、\"、\\、\n、\t、\r
+     * 字符字面量的语义是:
+     * 被包裹的字符的 ASCII 编码无符号扩展到 64 位的整数值，类型是 int
+     * 返回的类型也是UINT
+     * @throws TokenizeError
+     */
+    private Token lexChar() throws TokenizeError{
+		// TODO Auto-generated method stub
+    	char value=0;
+    	Pos beginp=it.currentPos();
+    	
+    	char temp=it.nextChar();
+    	if(it.isEOF()) {
+    		throw new TokenizeError(ErrorCode.InvalidChar, beginp);
+    	}
+    	value=it.nextChar();
+    	if(it.isEOF()||value=='\'') {
+    		throw new TokenizeError(ErrorCode.InvalidChar, beginp);
+    	}
+    	/* 如果是转义字符只能是下面这六个 */
+    	if(value=='\\') {
+    		value=it.nextChar();
+    		switch(value) {
+    		case '\\':value='\\';break;
+    		case '\'':value='\'';break;
+    		case '\"':value='\"';break;
+    		case 'n':value='\n';break;
+    		case 't':value='\t';break;
+    		case 'r':value='\r';break;
+    		default:throw new TokenizeError(ErrorCode.InvalidChar,beginp);
+    		}
+    	}
+//    	it.expect
+    	char next=it.nextChar();
+    	if(next!='\'') {
+    		throw new TokenizeError(ErrorCode.InvalidChar,beginp);
+    	}
+    	Pos endp=it.currentPos();
+    	return new Token(TokenType.UINT_LITERAL,(long)value, beginp,endp);
+	}
+
+	/*注释
      * 只有到达这一行的末尾这一种情况
      * @throws TokenizeError
      */
