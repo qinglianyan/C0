@@ -48,9 +48,22 @@ public class Analyser2 {
 		return this.outfile;
 	}
 
-	private void windup() {
+	private boolean windup() throws AnalyzeError {
 		// TODO Auto-generated method stub
+		assert this.symbolTable.getLevel() == 0;
+        Symbol symbol = symbolTable.findAllBlockSymbol("main");
+        if(symbol==null || symbol.getSymboltype()!=SymbolType.FUNCTION) {
+            throw new AnalyzeError(ErrorCode.NoMain, new Pos(0,0));
+        }
+        assert symbol instanceof FuncSymbol;
+        FuncSymbol funcSymbol = (FuncSymbol) symbol;
 
+        //为_start函数添加调用main的指令
+        this.outfile.addStartInstruction(new InstructionU32(InstructionType.StackAlloc, (int)1));
+        this.outfile.addStartInstruction(new InstructionU32(InstructionType.Call, (int)funcSymbol.getOffset()));
+        this.outfile.addStartInstruction(new InstructionU32(InstructionType.PopN, (int)1));
+
+        return true;
 	}
 
 	/*
