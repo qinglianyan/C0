@@ -18,19 +18,14 @@ import java.util.List;
  * 用来模拟oO的二进制文件
  */
 public class OoFile {
-
-
     //魔数
     private int magicNumber = 0x72303b3e;
     //版本号
     private int version = 0x00000001;
-
     //全局变量表
     private ArrayList<GlobalDef> globals;
-
     //函数列表
     private ArrayList<FunctionDef> functions;
-
     //_start函数在函数列表中的位置
     private int _START_POSITION = 0;
 

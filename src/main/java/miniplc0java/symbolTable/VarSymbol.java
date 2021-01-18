@@ -4,12 +4,9 @@ import miniplc0java.util.Pos;
 
 public class VarSymbol extends  Symbol{
 	/* 变量声明的符号，是符号的子类 */
-    //是否已经初始化
-    private boolean initialized;
-    //是否是全局变量
-    private boolean isGlobal;
-    //是否是函数参数
-    private boolean isParam;
+    private boolean initialized;	//是否已经初始化
+    private boolean isGlobal;		//是否是全局变量
+    private boolean isParam;		//是否是函数参数
 
     public VarSymbol(String name, SymbolType symbolType, DataType dType, Integer offset, Pos pos) {
         super(name, symbolType, dType, offset, pos);

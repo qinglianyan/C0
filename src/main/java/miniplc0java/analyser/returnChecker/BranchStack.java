@@ -22,7 +22,7 @@ public class BranchStack {
         this.branchBlocks.add(fnBranch);
     }
 
-    /**
+    /*
      * 添加一个if分支
      */
     public void addIfBranch() {
@@ -31,9 +31,7 @@ public class BranchStack {
         BranchBlock ifBranch = new BranchBlock(BranchType.IF, dType, 1);
         this.branchBlocks.add(ifBranch);
     }
-
-
-    /**
+    /*
      * 添加一个else分支
      */
     public void addElseBranch() {
@@ -43,8 +41,7 @@ public class BranchStack {
         this.branchBlocks.add(elseBrach);
     }
 
-
-    /**
+    /*
      * 添加一个while分支
      */
     public void addWhileBranch() {
@@ -55,7 +52,7 @@ public class BranchStack {
     }
 
 
-    /**
+    /*
      * 当前的分支有return语句
      * @param dType
      */
@@ -69,7 +66,7 @@ public class BranchStack {
         branchBlock.setCount2Zero();
     }
 
-    /**
+    /*
      * 这个分支退出，如果没有所有分支都覆盖到，则抛出异常，用于else，if，while等分支
      * 如果正常退出，则将其父节点的returnCount-1
      * @throws AnalyzeError
@@ -83,10 +80,9 @@ public class BranchStack {
     }
 
 
-    /**
+    /*
      * 一个函数退出，要区分其是否为void，不为void则强制需要参数
-     * @param pos
-     * @return
+     *
      * @throws AnalyzeError
      */
     public boolean quitFunc(Pos pos) throws  AnalyzeError {

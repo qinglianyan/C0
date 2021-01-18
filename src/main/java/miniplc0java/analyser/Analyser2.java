@@ -647,7 +647,7 @@ public class Analyser2 {
 	/*
 	 * 分析Factor表达式
 	 * Factor -> Atom { as ( INT | DOUBLE )}
-	 * 
+	 * double与int之间的转换，允许自己转换成自己的类型
 	 * @throws CompileError
 	 */
 	public DataType analyseFactor() throws CompileError {
@@ -655,15 +655,12 @@ public class Analyser2 {
 		DataType dType = analyseAtom();
 
 		while (it.check(TokenType.AS_KW)) {
-
-			// 如果类型的左端是VOID则不可以转换
-			if (dType == DataType.VOID) {
+			if (dType == DataType.VOID) {//只能是int与double
 				throw new AnalyzeError(ErrorCode.InvalidOpVoid, it.peek().getStartPos());
 			}
-
-			it.expect(TokenType.AS_KW); // 吃掉as符号
+			it.expect(TokenType.AS_KW);
 			Token ty = it.next();
-			if (ty.getTokenType() != TokenType.INT && ty.getTokenType() != TokenType.DOUBLE) { // as 只能接INT和DOUBLE
+			if (ty.getTokenType() != TokenType.INT && ty.getTokenType() != TokenType.DOUBLE) {
 				throw new AnalyzeError(ErrorCode.UnExpectToken, ty.getStartPos());
 			}
 			if (dType == DataType.INT && ty.getTokenType() == TokenType.DOUBLE) {

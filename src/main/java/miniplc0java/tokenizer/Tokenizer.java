@@ -130,8 +130,10 @@ public class Tokenizer {
 		String tem = "";
 		Pos beginp = it.currentPos();
 		while (!it.isEOF() && Character.isDigit(it.peekChar())) {
-
 			tem = tem + it.nextChar();
+			if(it.peekChar()=='.') {//有小数点说明是个double
+				return lexDouble(tem, beginp);
+			}
 		}
 		try {
 			int a = Integer.parseInt(tem);
@@ -141,6 +143,36 @@ public class Tokenizer {
 		catch (Error e) {
 			throw new Error("Not implemented");
 		}
+	}
+
+	/*
+	 * 浮点数double类型
+	 * DOUBLE_LITERAL -> digit+ '.' digit+ ([eE] [+-]? digit+)?
+	 * 
+	 * @return Token
+	 */
+	private Token lexDouble(String tem, Pos beginp) throws TokenizeError {
+		// TODO Auto-generated method stub
+		tem+=it.nextChar();//读到了包括小数点以前的
+		while(Character.isDigit(it.peekChar())) {
+			tem+=String.valueOf(it.nextChar());
+		}
+		if(it.peekChar()=='e'||it.peekChar()=='E') {
+			tem+=it.nextChar();
+			if(it.peekChar()=='-'||it.peekChar()=='+') {
+				tem+=it.nextChar();
+			}
+			if(!Character.isDigit(it.peekChar())) {
+				throw new TokenizeError(ErrorCode.InvalidInput,beginp);
+			}
+			while(Character.isDigit(it.peekChar())) {
+				tem+=it.nextChar();
+			}
+		}
+		Pos endp=it.currentPos();
+		double temp=Double.parseDouble(tem);
+		long value=Double.doubleToLongBits(temp);
+		return new Token(TokenType.DOUBLE_LITERAL, value, beginp, endp);
 	}
 
 	/* 标识符或者是关键字 */
