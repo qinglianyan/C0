@@ -750,7 +750,7 @@ public class Analyser2 {
 		else if (it.check(TokenType.IDENT)) {
 			dType = analyseCallOrAssignOrIdent();
 		} else {
-			/* 这里 */
+			/* 这里gai */
 			System.err.println(it.peek().getTokenType().toString());
 			throw new AnalyzeError(ErrorCode.UnExpectToken, it.peek().getStartPos());
 		}

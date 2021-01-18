@@ -42,15 +42,33 @@ public class Tokenizer {
 //        else if() {
 //        	return lexChar();
 //        }
-//        else if() {
-//        	return lexComment();
-//        }
+        else if(peek=='/') {
+        	return lexComment();
+        }
         else {
             return lexOperatorOrUnknown();
         }
     }
 
-    /* 无符号整数 */
+    /*注释
+     * 只有到达这一行的末尾这一种情况
+     * @throws TokenizeError
+     */
+    private Token lexComment() throws TokenizeError{
+		// TODO Auto-generated method stub
+    	it.nextChar();
+    	char tem=it.peekChar();
+    	if(tem!='/') {//这是一个除号
+    		return new Token(TokenType.DIV, "/",it.previousPos(),it.currentPos());
+    	}
+    	it.nextChar();
+    	while(!it.isEOF()&&it.peekChar()!='\n') {
+    		it.nextChar();
+    	}
+    	return nextToken();
+	}
+
+	/* 无符号整数 */
     /* 如果加double就在这里改 */
     private Token lexUInt() throws TokenizeError {
         // 直到查看下一个字符不是数字为止:
