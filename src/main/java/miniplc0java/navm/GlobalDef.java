@@ -37,6 +37,7 @@ public class GlobalDef {
         }
     }
 
+    //Auto generation
     public char getIsConst() {
         return isConst;
     }

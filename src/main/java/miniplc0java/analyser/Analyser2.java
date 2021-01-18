@@ -18,7 +18,7 @@ public class Analyser2 {
 	SymbolIter it; // 这是封装的词法分析器
 	SymbolTable symbolTable; // 符号表s
 	Map<TokenType, DataType> typeMap;
-	Stack<Integer> brStack; // 这个还不知道gai
+	Stack<Integer> brStack; //
 	BranchStack branchStack; // 返回分支
 	OoFile outfile;
 

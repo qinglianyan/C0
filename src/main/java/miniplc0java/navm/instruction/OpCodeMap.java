@@ -6,8 +6,6 @@ import java.util.Map;
 public class OpCodeMap {
 
     private static Map<InstructionType ,Character> opCodeMap;
-
-
     //指令给人看转换为指令给机器看
     static {
         opCodeMap  = new HashMap<>();
