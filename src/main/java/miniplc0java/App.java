@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import miniplc0java.analyser.Analyser;
 import miniplc0java.analyser.Analyser2;
 import miniplc0java.analyser.SymbolIter;
 import miniplc0java.error.CompileError;
