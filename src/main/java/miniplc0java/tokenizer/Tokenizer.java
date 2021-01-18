@@ -304,7 +304,7 @@ public class Tokenizer {
             	}
             }
             
-            case '<':
+            case '<':{
             	Pos beginp=it.previousPos();
             	if(it.peekChar()=='=') {
             		it.nextChar();
@@ -314,15 +314,19 @@ public class Tokenizer {
             	else {
             		return new Token(TokenType.LT, '<',it.previousPos(), it.currentPos());
             	}
+            }
             
-            case '>':
+            case '>':{
             	Pos beginp=it.previousPos();
             	if(it.peekChar()=='=') {
             		it.nextChar();
             		Pos endp=it.currentPos();
             		return new Token(TokenType.GE, ">=",beginp,endp);
             	}
-            	return new Token(TokenType.GT, '>',it.previousPos(), it.currentPos());
+            	else {
+            		return new Token(TokenType.GT, '>',it.previousPos(), it.currentPos());
+            	}
+            }
             
             case '(':
             	return new Token(TokenType.L_PAREN, '(',it.previousPos(), it.currentPos());
