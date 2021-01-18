@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.Scanner;
 
 import miniplc0java.analyser.Analyser;
+import miniplc0java.analyser.Analyser2;
+import miniplc0java.analyser.SymbolIter;
 import miniplc0java.error.CompileError;
 import miniplc0java.instruction.Instruction;
+import miniplc0java.navm.OoFile;
 import miniplc0java.tokenizer.StringIter;
 import miniplc0java.tokenizer.Token;
 import miniplc0java.tokenizer.TokenType;
@@ -55,19 +58,19 @@ public class App {
             }
         }
 
-        PrintStream output;
-        if (outputFileName.equals("-")) {
-            output = System.out;
-        } else {
+        DataOutputStream output;
+//        if (outputFileName.equals("-")) {
+//            output = System.out;
+//        } else {
             try {
-                output = new PrintStream(new FileOutputStream(outputFileName));
+                output = new DataOutputStream(new FileOutputStream(outputFileName));
             } catch (FileNotFoundException e) {
                 System.err.println("Cannot open output file.");
                 e.printStackTrace();
                 System.exit(2);
                 return;
             }
-        }
+//        }
         
         PrintStream debugOut;
         debugOut=System.out;
@@ -82,25 +85,25 @@ public class App {
 //        	System.out.println("输出数据："+str);
 //        }
         
-//        var iter = new StringIter(scanner);
-//        var tokenizer = tokenize(iter);
-//        var symbolIter=new SymbolIter(tokenizer);
-//        var analyse=new Analyser(tokenizer);
-//
-//        try {
-//            OoFile ooFile = analyse.analyse();
-//            ooFile.writeDebug(debugOutput);
-//            List<Byte> byteList = new ArrayList<>();
-//            ooFile.toAssemble(byteList);
-//            for(byte by: byteList) {
-//                System.out.printf("0x%x ", (int)by);
-//                output.writeByte((int)by);
-//            }
-//        } catch (Exception e) {
-//            // 遇到错误不输出，直接退出
-//            e.printStackTrace();
-//            System.exit(-1);
-//        }
+        var iter = new StringIter(scanner);
+        var tokenizer = tokenize(iter);
+        var symbolIter=new SymbolIter(tokenizer);
+        var analyse=new Analyser2(symbolIter);
+
+        try {
+            OoFile ooFile = analyse.analyse();
+            ooFile.writeDebug(debugOut);
+            List<Byte> byteList = new ArrayList<>();
+            ooFile.toAssemble(byteList);
+            for(byte by: byteList) {
+                System.out.printf("0x%x ", (int)by);
+                output.writeByte((int)by);
+            }
+        } catch (Exception e) {
+            // 遇到错误不输出，直接退出
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
     
     

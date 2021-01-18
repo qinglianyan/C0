@@ -121,6 +121,21 @@ public class Tokenizer {
     		else if(tem.contentEquals("continue")) {
     			return new Token(TokenType.CONTINUE_KW, "continue", beginp,it.currentPos());
     		}
+    		else if(tem.contentEquals("int")) {
+    			return new Token(TokenType.INT, "int", beginp,it.currentPos());
+    		}
+    		else if(tem.contentEquals("string")) {
+    			return new Token(TokenType.STRING, "string", beginp,it.currentPos());
+    		}
+    		else if(tem.contentEquals("void")) {
+    			return new Token(TokenType.VOID, "void", beginp,it.currentPos());
+    		}
+    		else if(tem.contentEquals("double")) {
+    			return new Token(TokenType.DOUBLE, "double", beginp,it.currentPos());
+    		}
+    		else if(tem.contentEquals("char")) {
+    			return new Token(TokenType.CHAR, "char", beginp,it.currentPos());
+    		}
     		else {
     			return new Token(TokenType.IDENT, tem, beginp,it.currentPos());
     		}
