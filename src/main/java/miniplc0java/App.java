@@ -151,8 +151,8 @@ public class App {
     private static ArgumentParser buildArgparse() {
         var builder = ArgumentParsers.newFor("miniplc0-java");
         var parser = builder.build();
-        parser.addArgument("-t", "--tokenize").help("Tokenize the input").action(Arguments.storeTrue());
-        parser.addArgument("-l", "--analyse").help("Analyze the input").action(Arguments.storeTrue());
+//        parser.addArgument("-t", "--tokenize").help("Tokenize the input").action(Arguments.storeTrue());
+//        parser.addArgument("-l", "--analyse").help("Analyze the input").action(Arguments.storeTrue());
         parser.addArgument("-o", "--output").help("Set the output file").required(true).dest("output")
                 .action(Arguments.store());
         parser.addArgument("file").required(true).dest("input").action(Arguments.store()).help("Input file");
